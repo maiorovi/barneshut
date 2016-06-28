@@ -59,6 +59,25 @@ import FloatOps._
     assert(quad.total == 1, s"${quad.total} should be 1")
   }
 
+  test("Fork with 4 empty quadrants") {
+    val nw = Empty(17.5f, 27.5f, 5f)
+    val ne = Empty(22.5f, 27.5f, 5f)
+    val sw = Empty(17.5f, 32.5f, 5f)
+    val se = Empty(22.5f, 32.5f, 5f)
+    val quad = Fork(nw, ne, sw, se)
+
+    assert(quad.centerX == 20f, s"${quad.centerX} should be 20f")
+    assert(quad.centerY == 30f, s"${quad.centerY} should be 30f")
+    assert(quad.mass ~= 0f, s"${quad.mass} should be 0f")
+    assert(quad.massX ~= 20f, s"${quad.massX} should be 0f")
+    assert(quad.massY ~= 30f, s"${quad.massY} should be 0ff")
+    assert(quad.total == 0, s"${quad.total} should be 0")
+  }
+
+  test("'insert' should work correctly on a leaf with center (1,1) and size 2") {
+
+  }
+
   test("Empty.insert(b) should return a Leaf with only that body") {
     val quad = Empty(51f, 46.3f, 5f)
     val b = new Body(3f, 54f, 46f, 0f, 0f)
@@ -110,6 +129,18 @@ import FloatOps._
     sm += body
     val res = sm(2, 3).size == 1 && sm(2, 3).find(_ == body).isDefined
     assert(res, s"Body not found in the right sector")
+  }
+
+  test("'insert' should work correctly on a leaf with center (1,1) and size <= minimumSize") {
+    val b1 = new Body(123f, 18f, 26f, 0f, 0f)
+    val b2 = new Body(524.5f, 24.5f, 25.5f, 0f, 0f)
+    val b3 = new Body(245f, 22.4f, 41f, 0f, 0f)
+    val leaf = Leaf(17.5f, 27.5f, 0.000001f, Seq(b1,b2))
+
+    val newLeaf = leaf.insert(b3)
+
+    assert(newLeaf.massX ~= 23.02773f)
+
   }
 
 }
