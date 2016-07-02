@@ -163,7 +163,7 @@ package object barneshut {
         case Fork(nw, ne, sw, se) => {
           // see if node is far enough from the body,
           // or recursion is needed
-          if (quad.total / distance(quad.massX, quad.massY, x, y) < theta) {
+          if (quad.size / distance(quad.centerX, quad.centerY, x, y) < theta) {
             addForce(quad.mass, quad.massX, quad.massY)
           } else {
             traverse(nw)
@@ -191,19 +191,49 @@ package object barneshut {
   val SECTOR_PRECISION = 8
 
   class SectorMatrix(val boundaries: Boundaries, val sectorPrecision: Int) {
+    type Cords = (Int, Int)
+
     val sectorSize = boundaries.size / sectorPrecision
     val matrix = new Array[ConcBuffer[Body]](sectorPrecision * sectorPrecision)
     for (i <- 0 until matrix.length) matrix(i) = new ConcBuffer
 
     def +=(b: Body): SectorMatrix = {
-      ???
+      if (isInBoundaries(b)) {
+        val yPos = b.y / sectorSize toInt
+        val xPos = (b.x / sectorSize).toInt
+        apply(xPos, yPos) += b
+      } else {
+        val coords = findClosestSector(b)
+        apply(coords._1, coords._2) += b
+      }
+
       this
+    }
+
+    private def isInBoundaries(b:Body): Boolean = isXInBoundaries(b) && isYInBoundaries(b)
+
+
+    private def isXInBoundaries(b:Body):Boolean = b.x >= boundaries.minX && b.x <= boundaries.maxX
+
+    private def isYInBoundaries(b:Body):Boolean = b.y >= boundaries.minY && b.y <= boundaries.maxY
+
+    private def findClosestSector(b:Body): Cords = {
+      val xCoord = if (isXInBoundaries(b)) b.x / sectorSize else boundaries.size / sectorSize
+      val yCoord = if (isYInBoundaries(b)) b.y / sectorSize else boundaries.size / sectorSize
+
+      (xCoord.toInt, yCoord.toInt)
     }
 
     def apply(x: Int, y: Int) = matrix(y * sectorPrecision + x)
 
     def combine(that: SectorMatrix): SectorMatrix = {
-      ???
+      val newMatrix = new SectorMatrix(boundaries, sectorPrecision)
+
+      for (i <- 0 to matrix.length - 1) {
+        newMatrix.matrix(i) = matrix(i).combine(that.matrix(i))
+      }
+
+      newMatrix
     }
 
     def toQuad(parallelism: Int): Quad = {

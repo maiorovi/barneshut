@@ -131,6 +131,55 @@ import FloatOps._
     assert(res, s"Body not found in the right sector")
   }
 
+  test("'SectorMatrix.+=' should add a body at (64,27) to the correct bucket of a sector matrix of size 96 when the sector precision is 12") {
+    val body = new Body(5, 64, 27, 0.1f, 0.1f)
+    val boundaries = new Boundaries()
+    boundaries.minX = 1
+    boundaries.minY = 1
+    boundaries.maxX = 97
+    boundaries.maxY = 97
+    val sm = new SectorMatrix(boundaries, 12)
+    sm += body
+    val res = sm(8, 3).size == 1 && sm(8,3).find(_ == body).isDefined
+    assert(res, s"Body not found in the right sector")
+  }
+
+  test("'SectorMatrix.+=' should add a body at (105,27) to the correct bucket of a sector matrix of size 96 when the sector precision is 12") {
+    val body = new Body(5, 105, 27, 0.1f, 0.1f)
+    val boundaries = new Boundaries()
+    boundaries.minX = 1
+    boundaries.minY = 1
+    boundaries.maxX = 97
+    boundaries.maxY = 97
+    val sm = new SectorMatrix(boundaries, 12)
+    sm += body
+    val res = sm(12, 3).size == 1 && sm(12,3).find(_ == body).isDefined
+    assert(res, s"Body not found in the right sector")
+  }
+
+  test("'SectorMatrix.combine' should correctly combine two sector matrices of size 96 that contain some points in the same sector") {
+    val bodyOne = new Body(5, 25, 49, 0.1f, 0.1f)
+    val bodyTwo = new Body(3, 24, 48, 0.1f, 0.1f)
+    val bodyThree = new Body(5, 64, 27, 0.1f, 0.1f)
+    val boundaries = new Boundaries()
+    boundaries.minX = 1
+    boundaries.minY = 1
+    boundaries.maxX = 97
+    boundaries.maxY = 97
+
+    val sm1 = new SectorMatrix(boundaries, 12)
+    val sm2 = new SectorMatrix(boundaries, 12)
+
+    sm1 += bodyOne
+    sm1 += bodyThree
+    sm2 += bodyTwo
+
+    val resSm = sm1.combine(sm2)
+    val res1 = resSm(3, 6).size == 2 && resSm(3, 6).find(_ == bodyOne).isDefined && resSm(3, 6).find(_ == bodyTwo).isDefined
+    val res2 =  resSm(8, 3).size == 1 && resSm(8,3).find(_ == bodyThree).isDefined
+    assert(res1 && res2, s"Body not found in the right sector")
+  }
+
   test("'insert' should work correctly on a leaf with center (1,1) and size <= minimumSize") {
     val b1 = new Body(123f, 18f, 26f, 0f, 0f)
     val b2 = new Body(524.5f, 24.5f, 25.5f, 0f, 0f)
@@ -151,6 +200,7 @@ import FloatOps._
     val newLeaf = leaf.insert(b3)
   }
 
+//  test()
 
 
 
