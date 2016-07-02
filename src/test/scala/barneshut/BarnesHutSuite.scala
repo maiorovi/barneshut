@@ -140,8 +140,19 @@ import FloatOps._
     val newLeaf = leaf.insert(b3)
 
     assert(newLeaf.massX ~= 23.02773f)
-
   }
+
+  test("'insert' should work correctly on a leaf with center (1,1) and size > minimumSize") {
+    val b1 = new Body(123f, 20.5f, 27.1f, 0f, 0f)
+    val b2 = new Body(524.5f, 20f, 27f, 0f, 0f)
+    val b3 = new Body(245f, 17.4f, 23f, 0f, 0f)
+    val leaf = Leaf(17.5f, 27.5f, 8, Seq(b1,b2))
+
+    val newLeaf = leaf.insert(b3)
+  }
+
+
+
 
 }
 
