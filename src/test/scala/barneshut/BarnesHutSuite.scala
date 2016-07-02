@@ -200,10 +200,17 @@ import FloatOps._
     val newLeaf = leaf.insert(b3)
   }
 
-//  test()
-
-
-
+  test("'SectorMatrix.+=' should add a body at (25,47) to the correct bucket of a sector matrix of size 100") {
+    val b = new Body(5, 25f,47f,0f,0f)
+    val boundaries = new Boundaries()
+    boundaries.minX = 1
+    boundaries.minY = 1
+    boundaries.maxX = 101
+    boundaries.maxY = 60
+    val sm1 = new SectorMatrix(boundaries, 12)
+    sm1.+=(b)
+    val res = sm1(3,5).size == 1 && sm1(3, 5).find(_ == b).isDefined
+  }
 }
 
 object FloatOps {

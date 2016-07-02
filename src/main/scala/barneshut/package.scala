@@ -193,15 +193,15 @@ package object barneshut {
   class SectorMatrix(val boundaries: Boundaries, val sectorPrecision: Int) {
     type Cords = (Int, Int)
 
-    val sectorSize = boundaries.size / sectorPrecision
+    val sectorSize:Float = boundaries.size / sectorPrecision.toFloat
     val matrix = new Array[ConcBuffer[Body]](sectorPrecision * sectorPrecision)
     for (i <- 0 until matrix.length) matrix(i) = new ConcBuffer
 
     def +=(b: Body): SectorMatrix = {
       if (isInBoundaries(b)) {
-        val yPos = b.y / sectorSize toInt
-        val xPos = (b.x / sectorSize).toInt
-        apply(xPos, yPos) += b
+        val yPos = b.y / sectorSize
+        val xPos = b.x / sectorSize
+        apply(xPos.toInt, yPos.toInt) += b
       } else {
         val coords = findClosestSector(b)
         apply(coords._1, coords._2) += b

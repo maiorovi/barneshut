@@ -9,14 +9,49 @@ import scala.collection.parallel.Combiner
 import scala.collection.parallel.mutable.ParHashSet
 import common._
 
+//object Test extends App {
+//
+//
+//  val body = new Body(5, 25, 47, 0.1f, 0.1f)
+//  val boundaries = new Boundaries()
+////  boundaries.minX = 1
+////  boundaries.minY = 1
+////  boundaries.maxX = 97
+////  boundaries.maxY = 97
+//
+//  updateBoundaries(boundaries, body)
+//}
+
 class Simulator(val taskSupport: TaskSupport, val timeStats: TimeStatistics) {
 
   def updateBoundaries(boundaries: Boundaries, body: Body): Boundaries = {
-    ???
+    val minX = Math.min(boundaries.minX, body.x)
+    val maxX = Math.max(boundaries.maxX, body.x)
+    val minY = Math.min(boundaries.minY, body.y)
+    val maxY = Math.max(boundaries.maxY, body.y)
+    val b = new Boundaries
+
+    b.minX = minX
+    b.maxX = maxX
+    b.minY = minY
+    b.maxY = maxY
+
+    b
   }
 
   def mergeBoundaries(a: Boundaries, b: Boundaries): Boundaries = {
-    ???
+    val minX = Math.min(a.minX, b.minX)
+    val maxX = Math.max(a.maxX, b.maxX)
+    val minY = Math.min(a.minY, b.minY)
+    val maxY = Math.max(a.maxY, b.maxY)
+
+    val newBoundaries = new Boundaries
+    newBoundaries.minX = minX
+    newBoundaries.maxX = maxX
+    newBoundaries.minY = minY
+    newBoundaries.maxY = maxY
+
+    newBoundaries
   }
 
   def computeBoundaries(bodies: Seq[Body]): Boundaries = timeStats.timed("boundaries") {
